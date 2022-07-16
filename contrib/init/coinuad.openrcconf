@@ -1,0 +1,33 @@
+# /etc/conf.d/coinuad: config file for /etc/init.d/coinuad
+
+# Config file location
+#COINUAD_CONFIGFILE="/etc/coinua/coinua.conf"
+
+# What directory to write pidfile to?  (created and owned by $COINUAD_USER)
+#COINUAD_PIDDIR="/var/run/coinuad"
+
+# What filename to give the pidfile
+#COINUAD_PIDFILE="${COINUAD_PIDDIR}/coinuad.pid"
+
+# Where to write coinuad data (be mindful that the blockchain is large)
+#COINUAD_DATADIR="/var/lib/coinuad"
+
+# User and group to own coinuad process
+#COINUAD_USER="coinua"
+#COINUAD_GROUP="coinua"
+
+# Path to coinuad executable
+#COINUAD_BIN="/usr/bin/coinuad"
+
+# Nice value to run coinuad under
+#COINUAD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#COINUAD_OPTS=""
+
+# The timeout in seconds OpenRC will wait for coinuad to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+COINUAD_SIGTERM_TIMEOUT=600

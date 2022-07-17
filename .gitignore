@@ -148,3 +148,8 @@ db4/
 osx_volname
 dist/
 *.background.tiff
+
+#custom
+.idea/
+/build_win/
+/build_lin/

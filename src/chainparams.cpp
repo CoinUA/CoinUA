@@ -12,6 +12,7 @@
 #include <util/system.h>
 #include <util/strencodings.h>
 #include <versionbitsinfo.h>
+#include <arith_uint256.h>
 
 #include <assert.h>
 
@@ -46,6 +47,47 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
+static void FindNetworkGenesisBlock(uint32_t nTime, uint32_t nBits, const char* network, const Consensus::Params& params)
+{
+    CBlock block = CreateGenesisBlock(nTime, 0, nBits, 1, 16 * COIN);
+
+    bool fNegative;
+    bool fOverflow;
+    arith_uint256 bnTarget;
+
+    bnTarget.SetCompact(block.nBits, &fNegative, &fOverflow);
+
+    // Check range
+    if (fNegative || bnTarget == 0 || fOverflow || bnTarget > UintToArith256(params.powLimit)) {
+        error("%sNetGenesisBlock: target out of range", network);
+        assert(false);
+    }
+
+    for (uint32_t nNonce = 0; nNonce < UINT32_MAX; nNonce++) {
+        block.nNonce = nNonce;
+
+        uint256 hash = block.GetHash();
+        if (nNonce % 48 == 0) {
+            printf("\nrnonce=%d, pow is %s\n", nNonce, hash.GetHex().c_str());
+        }
+
+        if (UintToArith256(hash) <= bnTarget) {
+            printf("\n%s net\n", network);
+            printf("\ngenesis is %s\n", block.ToString().c_str());
+            printf("\npow is %s\n", hash.GetHex().c_str());
+            printf("\ngenesisNonce is %d\n", nNonce);
+            std::cout << "Genesis Merkle " << block.hashMerkleRoot.GetHex() << std::endl;
+            return;
+        }
+
+    }
+
+    // This is very unlikely to happen as we start the devnet with a very low difficulty. In many cases even the first
+    // iteration of the above loop will give a result already
+    error("%sNetGenesisBlock: could not find %s genesis block",network, network);
+    assert(false);
+}
+
 /**
  * Main network
  */
@@ -69,7 +111,7 @@ public:
         consensus.nPowTargetSpacing = 60;
         consensus.nZawyLwmaAveragingWindow = 90;
         consensus.fPowAllowMinDifficultyBlocks = false;
-        consensus.fPowNoRetargeting = false;
+        consensus.fPowNoRetargeting = true;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -100,9 +142,9 @@ public:
         m_assumed_blockchain_size = 10;
         m_assumed_chain_state_size = 6;
 
-        genesis = CreateGenesisBlock(1657141200, 651, 0x1f1fffff, 1, 16 * COIN);
+        genesis = CreateGenesisBlock(1657152000, 1074, 0x1f1fffff, 1, 16 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x35d1e9e7d58d86176a21447abadc9932b5a03af6e0cf72d8736d4bd87a45e708"));
+        assert(consensus.hashGenesisBlock == uint256S("0x0002f40f8956e0d3f0e45e0ee5664a4373b4f246d2ad3c9209c19cc87273e3ab"));
         assert(genesis.hashMerkleRoot == uint256S("0xc592d07f630afc04ba44689dc6cc4a41a6420559f2828685567f4cc2a8f05aa1"));
 
         vSeeds.emplace_back("seed1.coinuacore.net");
@@ -124,13 +166,12 @@ public:
         m_is_test_chain = false;
         m_is_mockable_chain = false;
 
+        std::vector<FounderRewardStructure> rewardStructures = {  {INT_MAX, 5} };  // 5% founder/dev fee forever
+        consensus.nFounderPayment = FounderPayment(rewardStructures, 10, "cua1qyjjz22wdry5vjxkm08pxlk5hqapmy25vqsf8gw");
+
         checkpointData = {
             {
-                {0, uint256S("0x00043e9c6bc54d9bd266c3767a83a7b9da435dd7f84e485a2bf2a869be62f1f3")},
-                {662, uint256S("0x00021b08ddf59cd9d9e396ef46c6d57644b3aac7977d271c966f66b63df45dd1")},
-                {9074, uint256S("0x0000007e1d70d529752b87fe47f979ae5f8f27bbc987dd0c8b21c9c5a6f3099b")},
-                {12167, uint256S("0x0000006fa4023de2a1d4bd712e7d7aafa15a273f6c78b32bd87185846e0cc903")},
-                {606942, uint256S("0x0000000d7c7c25d0e2a8a8ff4013ae7154ba2d0c0217dc71b942f41af7be990a")},
+                {0, uint256S("0x0002f40f8956e0d3f0e45e0ee5664a4373b4f246d2ad3c9209c19cc87273e3ab")},
             }
         };
 
@@ -152,7 +193,7 @@ public:
         strNetworkID = CBaseChainParams::TESTNET;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
-        consensus.nSubsidyHalvingInterval = 1000;
+        consensus.nSubsidyHalvingInterval = 500;
         consensus.BIP16Exception = uint256S("0x00002a542f15e4f95e6256e5fc37532ad965e5874b4f5c4aaab75c792f184f63");
         consensus.BIP34Height = 0;
         consensus.BIP34Hash = uint256S("0x00002a542f15e4f95e6256e5fc37532ad965e5874b4f5c4aaab75c792f184f63");
@@ -161,12 +202,12 @@ public:
         consensus.CSVHeight = 0; // 00000000025e930139bac5c6c31a403776da130831ab85be56578f3fa75369bb
         consensus.SegwitHeight = 0; // 00000000002b980fcd729daaa248fd9316a5200e9b367f4ff2c42453e84201ca
         consensus.MinBIP9WarningHeight = 0; // segwit activation height + miner confirmation window
-        consensus.powLimit = uint256S("3fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 60;
         consensus.nZawyLwmaAveragingWindow = 90;
         consensus.fPowAllowMinDifficultyBlocks = true;
-        consensus.fPowNoRetargeting = false;
+        consensus.fPowNoRetargeting = true;
         consensus.nRuleChangeActivationThreshold = 1368; // 75% for testchains
         consensus.nMinerConfirmationWindow = 1440; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -192,9 +233,9 @@ public:
         m_assumed_blockchain_size = 10;
         m_assumed_chain_state_size = 2;
 
-        genesis = CreateGenesisBlock(1657141200, 18156, 0x1e3fffff, 1, 16 * COIN);
+        genesis = CreateGenesisBlock(1657152000, 223, 0x1f5fffff, 1, 16 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0xb3d2f0f5ae08d83bec2041f661fb6db128b7b1a6163c7ec40cd72af2ec6a2a49"));
+        assert(consensus.hashGenesisBlock == uint256S("0x0030cba9de87530398a87e676c4146b1ea57b78ba49c5427bf563732147abab3"));
         assert(genesis.hashMerkleRoot == uint256S("0xc592d07f630afc04ba44689dc6cc4a41a6420559f2828685567f4cc2a8f05aa1"));
 
         vFixedSeeds.clear();
@@ -217,9 +258,12 @@ public:
         m_is_test_chain = true;
         m_is_mockable_chain = false;
 
+        std::vector<FounderRewardStructure> rewardStructures = {  {INT_MAX, 5} };  // 5% founder/dev fee forever
+        consensus.nFounderPayment = FounderPayment(rewardStructures, 10, "tc1qlqweh4h44a2zxrxnc4em5ld870aqxakt4e6azt");
+
         checkpointData = {
             {
-                {0, uint256S("00002a542f15e4f95e6256e5fc37532ad965e5874b4f5c4aaab75c792f184f63")},
+                {0, uint256S("0x0030cba9de87530398a87e676c4146b1ea57b78ba49c5427bf563732147abab3")},
             }
         };
 
@@ -407,11 +451,11 @@ public:
         m_is_mockable_chain = true;
 
         std::vector<FounderRewardStructure> rewardStructures = {  {INT_MAX, 5} };  // 5% founder/dev fee forever
-        consensus.nFounderPayment = FounderPayment(rewardStructures, 1);
+        consensus.nFounderPayment = FounderPayment(rewardStructures, 10, "rcrt1qyxast0wts5955mmzeea5zex8f0a20ny77vv4dq");
 
         checkpointData = {
             {
-                {0, uint256S("327f1b1d976d222269e6b7486c8ffc040e9019fd5d75d481740ecb777c1d7866")},
+                {0, uint256S("0x2b5f40a4cae7653f857c4fdf06d7c5757a39f9d8082f44ce50782383d3cc4d33")},
             }
         };
 
@@ -514,4 +558,7 @@ void SelectParams(const std::string& network)
 {
     SelectBaseParams(network);
     globalChainParams = CreateChainParams(gArgs, network);
+
+    // testnet
+    // FindNetworkGenesisBlock(1657152000, 0x1f5fffff, network.c_str(), globalChainParams->GetConsensus());
 }

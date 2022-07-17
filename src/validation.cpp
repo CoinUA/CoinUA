@@ -3398,7 +3398,7 @@ bool CheckBlock(const CBlock& block, BlockValidationState& state, const Consensu
         if (block.vtx[i]->IsCoinBase())
             return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cb-multiple", "more than one coinbase");
 
-    CAmount blockReward = GetBlockSubsidy(nHeight - 1, Params().GetConsensus());
+    CAmount blockReward = GetBlockSubsidy(nHeight, Params().GetConsensus());
     // Check transactions
     // Must check for duplicate inputs (see CVE-2018-17144)
     for (const auto& tx : block.vtx) {

@@ -18,6 +18,8 @@
 #include <QAbstractItemDelegate>
 #include <QApplication>
 #include <QPainter>
+#include <QMovie>
+#include <QDir>
 #include <QStatusTipEvent>
 
 #include <algorithm>
@@ -131,6 +133,16 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     icon.addPixmap(icon.pixmap(QSize(64,64), QIcon::Normal), QIcon::Disabled); // also set the disabled icon because we are using a disabled QPushButton to work around missing HiDPI support of QLabel (https://bugreports.qt.io/browse/QTBUG-42503)
     ui->labelTransactionsStatus->setIcon(icon);
     ui->labelWalletStatus->setIcon(icon);
+
+    QMovie *movie = new QMovie(":/animation/bitcoin");
+    if (movie->isValid()) {
+        ui->label->setGeometry(1,175,128,128);
+        ui->label->setMovie(movie);
+        movie->setSpeed(90);
+        movie->start();
+    } else {
+        //
+    }
 
     // Recent transactions
     ui->listTransactions->setItemDelegate(txdelegate);

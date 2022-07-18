@@ -57,6 +57,14 @@ src/qt/bitcoin-qt.creator.user
 src/qt/bitcoin-qt.files
 src/qt/bitcoin-qt.includes
 
+src/coinua-qt.config
+src/coinua-qt.creator
+src/coinua-qt.creator.user
+src/coinua-qt.files
+src/coinua-qt.includes
+src/coinua-qt.cflags
+src/coinua-qt.cxxflags
+
 .deps
 .dirstamp
 .libs

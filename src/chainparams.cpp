@@ -98,9 +98,9 @@ public:
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
         consensus.nSubsidyHalvingInterval = 525600;
-        consensus.BIP16Exception = uint256S("0x00043e9c6bc54d9bd266c3767a83a7b9da435dd7f84e485a2bf2a869be62f1f3");
+        consensus.BIP16Exception = uint256S("0x0002f40f8956e0d3f0e45e0ee5664a4373b4f246d2ad3c9209c19cc87273e3ab");
         consensus.BIP34Height = 17;
-        consensus.BIP34Hash = uint256S("0x001ea0da3586f06aa32de50b9764eec2eaba2274191771ad536092d4f9f90fa9");
+        consensus.BIP34Hash = uint256S("0x0002f40f8956e0d3f0e45e0ee5664a4373b4f246d2ad3c9209c19cc87273e3ab");
         consensus.BIP65Height = 0; // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
         consensus.BIP66Height = 0; // 00000000000000000379eaa19dce8c9b722d46ae6a57c2f1a988119488b50931
         consensus.CSVHeight = 0; // 000000000000000004a1b34462cb8aeebd5799177f7a29cf28f2d1961716b5b5
@@ -125,19 +125,19 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = 1622356007; // Sunday, 30 May 2021
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0; // No activation delay
 
-        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000015e19c1ad1");
-        consensus.defaultAssumeValid = uint256S("0x0000000d7c7c25d0e2a8a8ff4013ae7154ba2d0c0217dc71b942f41af7be990a"); // 606942
+        consensus.nMinimumChainWork = uint256S("0x00");
+        consensus.defaultAssumeValid = uint256S("0x00");
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
-        pchMessageStart[0] = 0xca;
-        pchMessageStart[1] = 0xae;
-        pchMessageStart[2] = 0xd9;
-        pchMessageStart[3] = 0xfe;
-        nDefaultPort = 1604;
+        pchMessageStart[0] = 0xf5;
+        pchMessageStart[1] = 0xde;
+        pchMessageStart[2] = 0xcc;
+        pchMessageStart[3] = 0xb4;
+        nDefaultPort = 3773;
         nPruneAfterHeight = 1000;
         m_assumed_blockchain_size = 10;
         m_assumed_chain_state_size = 6;
@@ -151,23 +151,23 @@ public:
         vSeeds.emplace_back("seed2.coinuacore.net");
         vSeeds.emplace_back("seed3.coinuacore.net");
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,33);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,30);
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,40); // Address letter prefix
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,68); // Segwit Address prefix
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,128);
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
 
         bech32_hrp = "cua";
 
-        vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
+//        vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
         m_is_test_chain = false;
         m_is_mockable_chain = false;
 
-        std::vector<FounderRewardStructure> rewardStructures = {  {INT_MAX, 5} };  // 5% founder/dev fee forever
-        consensus.nFounderPayment = FounderPayment(rewardStructures, 10, "cua1qyjjz22wdry5vjxkm08pxlk5hqapmy25vqsf8gw");
+        std::vector<FounderRewardStructure> rewardStructures = {  {INT_MAX, 3} };  // 5% founder/dev fee forever
+        consensus.nFounderPayment = FounderPayment(rewardStructures, 1, "cua1qxv9dmrae0unm2ecnfhpzfcjvl80uapndltups0", true);
 
         checkpointData = {
             {
@@ -194,9 +194,9 @@ public:
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
         consensus.nSubsidyHalvingInterval = 500;
-        consensus.BIP16Exception = uint256S("0x00002a542f15e4f95e6256e5fc37532ad965e5874b4f5c4aaab75c792f184f63");
-        consensus.BIP34Height = 0;
-        consensus.BIP34Hash = uint256S("0x00002a542f15e4f95e6256e5fc37532ad965e5874b4f5c4aaab75c792f184f63");
+        consensus.BIP16Exception = uint256S("0x0030cba9de87530398a87e676c4146b1ea57b78ba49c5427bf563732147abab3");
+        consensus.BIP34Height = 17;
+        consensus.BIP34Hash = uint256S("0x0030cba9de87530398a87e676c4146b1ea57b78ba49c5427bf563732147abab3");
         consensus.BIP65Height = 0; // 00000000007f6655f22f98e72ed80d8b06dc761d5da09df0fa1dc4be4f861eb6
         consensus.BIP66Height = 0; // 000000002104c8c45e99a8853285a3b592602a3ccde2b832481da85e9e4ba182
         consensus.CSVHeight = 0; // 00000000025e930139bac5c6c31a403776da130831ab85be56578f3fa75369bb
@@ -224,10 +224,10 @@ public:
         consensus.nMinimumChainWork = uint256S("0x00");
         consensus.defaultAssumeValid = uint256S("0x00");
 
-        pchMessageStart[0] = 0xad;
-        pchMessageStart[1] = 0xbe;
-        pchMessageStart[2] = 0xdc;
-        pchMessageStart[3] = 0xfe;
+        pchMessageStart[0] = 0xd2;
+        pchMessageStart[1] = 0xf0;
+        pchMessageStart[2] = 0xea;
+        pchMessageStart[3] = 0xb7;
         nDefaultPort = 29706;
         nPruneAfterHeight = 1000;
         m_assumed_blockchain_size = 10;
@@ -241,17 +241,17 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
-        vSeeds.emplace_back("seed1.coinuacore.net");
+        vSeeds.emplace_back("ns-seed.coinua.local");
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,66);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,58);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,82);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,245);
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
         bech32_hrp = "tc";
 
-        vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
+//        vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 
         fDefaultConsistencyChecks = false;
         fRequireStandard = false;
@@ -259,7 +259,7 @@ public:
         m_is_mockable_chain = false;
 
         std::vector<FounderRewardStructure> rewardStructures = {  {INT_MAX, 5} };  // 5% founder/dev fee forever
-        consensus.nFounderPayment = FounderPayment(rewardStructures, 10, "tc1qlqweh4h44a2zxrxnc4em5ld870aqxakt4e6azt");
+        consensus.nFounderPayment = FounderPayment(rewardStructures, 1, "tc1qlqweh4h44a2zxrxnc4em5ld870aqxakt4e6azt", true);
 
         checkpointData = {
             {
@@ -407,7 +407,7 @@ public:
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 60;
-        consensus.nZawyLwmaAveragingWindow = 90;
+        consensus.nZawyLwmaAveragingWindow = 900000000;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = true;
         consensus.nRuleChangeActivationThreshold = 108; // 75% for testchains
@@ -465,8 +465,8 @@ public:
             0
         };
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,61);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,95);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,140);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};

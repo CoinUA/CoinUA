@@ -13,7 +13,7 @@
 #include <key_io.h>
 
 CAmount FounderPayment::getFounderPaymentAmount(int blockHeight, CAmount blockReward) {
-	 if (blockHeight <= startBlock){
+	 if (blockHeight < startBlock){
 		 return 0;
 	 }
 	 for(size_t i = 0; i < rewardStructures.size(); i++) {

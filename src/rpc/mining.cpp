@@ -894,17 +894,25 @@ static RPCHelpMan getblocktemplate()
     result.pushKV("bits", strprintf("%08x", pblock->nBits));
     result.pushKV("height", (int64_t)(pindexPrev->nHeight+1));
 
-    UniValue founderObj(UniValue::VOBJ);
     FounderPayment founderPayment = Params().GetConsensus().nFounderPayment;
-    if(pblock->txoutFounder != CTxOut()) {
-        CTxDestination founder_addr;
-        ExtractDestination(pblock->txoutFounder.scriptPubKey, founder_addr);
-        founderObj.pushKV("payee", EncodeDestination(founder_addr).c_str());
-        founderObj.pushKV("script", HexStr(pblock->txoutFounder.scriptPubKey));
-        founderObj.pushKV("amount", pblock->txoutFounder.nValue);
+    if (founderPayment.isEnable()) {
+        UniValue founderObj(UniValue::VOBJ);
+        if(pblock->txoutFounder != CTxOut()) {
+            CTxDestination founderAddress;
+            ExtractDestination(pblock->txoutFounder.scriptPubKey, founderAddress);
+            std::string payee = EncodeDestination(founderAddress);
+
+            founderObj.pushKV("payee", payee.c_str());
+            founderObj.pushKV("script", HexStr(pblock->txoutFounder.scriptPubKey));
+            founderObj.pushKV("amount", pblock->txoutFounder.nValue);
+
+            // Yiimp stratum charity
+            result.pushKV("payee", payee.c_str());
+            result.pushKV("amount", pblock->txoutFounder.nValue);
+        }
+        result.pushKV("founder", founderObj);
+        result.pushKV("founder_payments_started", pindexPrev->nHeight + 1 >= founderPayment.getStartBlock());
     }
-    result.pushKV("founder", founderObj);
-    result.pushKV("founder_payments_started", pindexPrev->nHeight + 1 > founderPayment.getStartBlock());
 
     if (!pblocktemplate->vchCoinbaseCommitment.empty()) {
         result.pushKV("default_witness_commitment", HexStr(pblocktemplate->vchCoinbaseCommitment));

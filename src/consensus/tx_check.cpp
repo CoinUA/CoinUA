@@ -52,8 +52,9 @@ bool CheckTransaction(const CTransaction& tx, TxValidationState& state, int nHei
         FounderPayment founderPayment = Params().GetConsensus().nFounderPayment;
         CAmount founderReward = founderPayment.getFounderPaymentAmount(nHeight, blockReward);
         int founderStartHeight = founderPayment.getStartBlock();
-        if(nHeight > founderStartHeight && founderReward && !founderPayment.IsBlockPayeeValid(tx, nHeight, blockReward)) {
-            return state.Invalid(TxValidationResult::TX_FOUNDERS_FEE, "bad-cb-founder-payment-not-found");
+        bool isFounderFeeEnabled = founderPayment.isEnable();
+        if(isFounderFeeEnabled && nHeight >= founderStartHeight && founderReward && !founderPayment.IsBlockPayeeValid(tx, nHeight, blockReward)) {
+            return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-cb-founder-payment-not-found");
         }
     }
     else

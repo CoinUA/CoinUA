@@ -151,10 +151,15 @@ public:
         vSeeds.emplace_back("seed2.coinuacore.net");
         vSeeds.emplace_back("seed3.coinuacore.net");
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,40); // Address letter prefix
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,68); // Segwit Address prefix
+        // CoinUa addresses start with 'H'
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,40);
+        // CoinUa script addresses start with 'U'
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,68);
+        // CoinUa private keys start with '7' or 'X'
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,128);
+        // CoinUa BIP32 pubkeys start with 'xpub' (Bitcoin defaults)
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
+        // CoinUa BIP32 prvkeys start with 'xprv' (Bitcoin defaults)
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
 
         bech32_hrp = "cua";
@@ -167,7 +172,7 @@ public:
         m_is_mockable_chain = false;
 
         std::vector<FounderRewardStructure> rewardStructures = {  {INT_MAX, 3} };  // 5% founder/dev fee forever
-        consensus.nFounderPayment = FounderPayment(rewardStructures, 1, "cua1qxv9dmrae0unm2ecnfhpzfcjvl80uapndltups0", true);
+        consensus.nFounderPayment = FounderPayment(rewardStructures, 1, "HVcj4duj5dbPae7f7tfTtVSfRCCDbcuaSP", true);
 
         checkpointData = {
             {

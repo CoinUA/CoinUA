@@ -908,7 +908,7 @@ static RPCHelpMan getblocktemplate()
 
             // Yiimp stratum charity
             result.pushKV("payee", payee.c_str());
-            result.pushKV("amount", pblock->txoutFounder.nValue);
+            result.pushKV("payee_amount", pblock->txoutFounder.nValue);
         }
         result.pushKV("founder", founderObj);
         result.pushKV("founder_payments_started", pindexPrev->nHeight + 1 >= founderPayment.getStartBlock());

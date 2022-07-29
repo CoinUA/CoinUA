@@ -161,3 +161,4 @@ dist/
 .idea/
 /build_win/
 /build_lin/
+/build_docker/

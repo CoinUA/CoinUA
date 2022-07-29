@@ -167,11 +167,6 @@ void JSONRPCRequest::parse(const UniValue& valRequest)
     if (!valMethod.isStr())
         throw JSONRPCError(RPC_INVALID_REQUEST, "Method must be a string");
     strMethod = valMethod.get_str();
-    if (fLogIPs)
-        LogPrint(BCLog::RPC, "ThreadRPCServer method=%s user=%s peeraddr=%s\n", SanitizeString(strMethod),
-            this->authUser, this->peerAddr);
-    else
-        LogPrint(BCLog::RPC, "ThreadRPCServer method=%s user=%s\n", SanitizeString(strMethod), this->authUser);
 
     // Parse params
     UniValue valParams = find_value(request, "params");
@@ -181,4 +176,11 @@ void JSONRPCRequest::parse(const UniValue& valRequest)
         params = UniValue(UniValue::VARR);
     else
         throw JSONRPCError(RPC_INVALID_REQUEST, "Params must be an array or object");
+
+    if (fLogIPs)
+        LogPrint(BCLog::RPC, "ThreadRPCServer method=%s user=%s peeraddr=%s params=%s\n", SanitizeString(strMethod),
+                 this->authUser, this->peerAddr, this->params.write(1, 1));
+    else
+        LogPrint(BCLog::RPC, "ThreadRPCServer method=%s user=%s params=%s\n", SanitizeString(strMethod), this->authUser,
+                 this->params.write(1, 1));
 }
